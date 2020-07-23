@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 public class MovieCatalogResource {
 
 
-//    @Autowired
-//    RestTemplate restTemplate;
-
     @Autowired
-    WebClient.Builder webClientBuilder;
+    RestTemplate restTemplate;
+
+//    @Autowired
+//    WebClient.Builder webClientBuilder;
 
     //get all rated movie IDs
     //For each movie ID,call movie info service and get details
@@ -38,14 +38,14 @@ public class MovieCatalogResource {
         List<Rating> ratings = Arrays.asList(new Rating("1234",3),new Rating("5678",5));
 
         return ratings.stream().map(rating ->{
-//            Movie movie = restTemplate.getForObject("http://localhost:8082/movies/"+rating.getMovieId(), Movie.class);  //making call to API and unmarshalling into the Obj
+            Movie movie = restTemplate.getForObject("http://localhost:8082/movies/"+rating.getMovieId(), Movie.class);  //making call to API and unmarshalling into the Obj
 
-            Movie movie = webClientBuilder.build()
-                    .get()
-                    .uri("http://localhost:8082/movies/"+rating.getMovieId())
-                    .retrieve()
-                    .bodyToMono(Movie.class)
-                    .block();
+//            Movie movie = webClientBuilder.build()
+//                    .get()
+//                    .uri("http://localhost:8082/movies/"+rating.getMovieId())
+//                    .retrieve()
+//                    .bodyToMono(Movie.class)
+//                    .block();
 
             return new CatalogItem(movie.getName(),"description",rating.getRating());
         } )
