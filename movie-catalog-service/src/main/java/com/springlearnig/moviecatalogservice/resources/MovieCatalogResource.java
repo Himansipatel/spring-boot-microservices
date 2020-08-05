@@ -4,6 +4,7 @@ import com.springlearnig.moviecatalogservice.models.CatalogItem;
 import com.springlearnig.moviecatalogservice.models.Movie;
 import com.springlearnig.moviecatalogservice.models.UserRating;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,9 +19,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/catalog")
 public class MovieCatalogResource {
 
-
     @Autowired
-    RestTemplate restTemplate;
+    private RestTemplate restTemplate;
+
+//    @Autowired
+//    private DiscoveryClient discoveryClient;
 
 //    @Autowired
 //    WebClient.Builder webClientBuilder;
@@ -36,9 +39,11 @@ public class MovieCatalogResource {
 
         UserRating ratings = restTemplate.getForObject("http://ratings-data-service/ratingsdata/users/"+userId,UserRating.class);
 
-        return ratings.getUserRating().stream().map(rating ->{
+        return ratings.getRatings().stream().map(rating ->{
+            System.out.println("enter here");
             Movie movie = restTemplate.getForObject("http://movie-info-service/movies/"+rating.getMovieId(), Movie.class);  //making call to API and unmarshalling into the Obj
-            return new CatalogItem(movie.getName(),"description",rating.getRating());
+            System.out.println("get back main place after call");
+            return new CatalogItem(movie.getName(), movie.getDescription(), rating.getRating());
         } )
         .collect(Collectors.toList());
        // return Collections.singletonList(new CatalogItem("Transformers","Test",4));
